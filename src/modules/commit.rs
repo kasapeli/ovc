@@ -1,6 +1,6 @@
 use sha256::{digest, try_digest};
-use std::fs::{self, OpenOptions};
-use std::io::{self, Write};
+use std::fs::{self};
+use std::io::{self};
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
