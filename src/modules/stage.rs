@@ -1,6 +1,5 @@
 use std::{
-    self,
-    fs::{self, OpenOptions},
+    self, fs,
     io::{self, Write},
     path::Path,
 };
@@ -18,17 +17,35 @@ pub fn stage_file(stage_file: &Path) -> io::Result<()> {
     fs::write(&object_bak_dir, file_bytes)?;
 
     let index_dir = Path::new(".ovc/index");
-    let mut index_file = OpenOptions::new()
-        .write(true)
-        .append(true)
-        .open(index_dir)?;
+    let abs_path_str = stagef.to_string_lossy().to_string();
+    let mut index_lines = Vec::new();
+    let mut file_already_tracked = false;
 
-    writeln!(
-        index_file,
-        "{} {}",
-        stagef.to_string_lossy(),
-        stage_file_hash
-    )?;
+    if index_dir.exists() {
+        let content = fs::read_to_string(index_dir)?;
+        for line in content.lines() {
+            if line.trim().is_empty() {
+                continue;
+            }
+            let parts: Vec<&str> = line.split_whitespace().collect();
+            if parts.is_empty() {
+                continue;
+            }
+
+            if parts[0] == abs_path_str {
+                index_lines.push(format!("{} {}", abs_path_str, stage_file_hash));
+                file_already_tracked = true;
+            } else {
+                index_lines.push(line.to_string());
+            }
+        }
+    }
+
+    if !file_already_tracked {
+        index_lines.push(format!("{} {}", abs_path_str, stage_file_hash));
+    }
+
+    fs::write(index_dir, index_lines.join("\n") + "\n")?;
 
     println!(
         "ovc: staged {:?}",
