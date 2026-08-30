@@ -6,7 +6,7 @@ pub struct Args {
     #[arg(short = 'i', long = "init")]
     pub init_repo: bool,
 
-    #[arg(short = 'c', long = "clean")]
+    #[arg(short = 'C', long = "CLEAN")]
     pub clean_repo: bool,
 
     #[arg(short = 's', long = "stage", value_name = "FILE")]
@@ -14,4 +14,7 @@ pub struct Args {
 
     #[arg(short = 'S', long = "status")]
     pub repo_status: bool,
+
+    #[arg(short = 'c', long = "commit", value_name = "MESSAGE")]
+    pub message: String,
 }
