@@ -1,4 +1,5 @@
 use std::{
+    collections::HashSet,
     fs,
     io::{self, BufRead},
     path::Path,
@@ -17,6 +18,7 @@ pub fn show_status() -> io::Result<()> {
     let index_file = fs::File::open(&index_dir)?;
     let read = io::BufReader::new(index_file);
 
+    let mut tracked_files = HashSet::new();
     let mut no_change = true;
 
     for change in read.lines() {
@@ -35,6 +37,8 @@ pub fn show_status() -> io::Result<()> {
         let hash = parts[1];
         let watch = Path::new(tracked_path);
 
+        tracked_files.insert(tracked_path.to_string());
+
         if !watch.exists() {
             println!("ovc: deleted {}", tracked_path);
             no_change = false;
@@ -52,6 +56,31 @@ pub fn show_status() -> io::Result<()> {
                 }
             }
         }
+    }
+
+    let mut found_untracked = false;
+
+    for entry in fs::read_dir(".")? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file() {
+            if let Ok(lpath) = path.canonicalize() {
+                let abs_path = lpath.to_string_lossy().to_string();
+
+                if !tracked_files.contains(&abs_path) {
+                    let file_name = path.file_name().unwrap_or_default().to_string_lossy();
+                    println!("ovc: untracked {}", file_name);
+
+                    found_untracked = true;
+                    no_change = false;
+                }
+            }
+        }
+    }
+
+    if !found_untracked {
+        println!("ovc: no untracked files");
     }
 
     if no_change {
