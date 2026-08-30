@@ -16,5 +16,5 @@ pub struct Args {
     pub repo_status: bool,
 
     #[arg(short = 'c', long = "commit", value_name = "MESSAGE")]
-    pub message: String,
+    pub message: Option<String>,
 }

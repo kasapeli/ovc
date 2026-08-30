@@ -19,31 +19,31 @@ fn main() {
         args.repo_status,
         args.message,
     ) {
-        (Some(stagef), false, false, false, _) => {
+        (Some(stagef), false, false, false, None) => {
             if let Err(e) = stage_file(&stagef) {
                 eprintln!("ovc: couldn't stage file. {}", e);
                 std::process::exit(1);
             }
         }
-        (None, false, true, false, _) => {
+        (None, false, true, false, None) => {
             if let Err(e) = clean_repo() {
                 eprintln!("ovc: failed to clean up repository. {}", e);
                 std::process::exit(1);
             }
         }
-        (None, true, false, false, _) => {
+        (None, true, false, false, None) => {
             if let Err(e) = init_repo() {
                 eprintln!("ovc: failed to initialize repository. {}", e);
                 std::process::exit(1);
             }
         }
-        (None, false, false, true, _) => {
+        (None, false, false, true, None) => {
             if let Err(e) = show_status() {
                 eprintln!("ovc: failed to show status. {}", e);
                 std::process::exit(1);
             }
         }
-        (None, false, false, false, message) => {
+        (None, false, false, false, Some(message)) => {
             if let Err(e) = create_commit(message) {
                 eprintln!("ovc: failed to commit. {}", e);
                 std::process::exit(1);
