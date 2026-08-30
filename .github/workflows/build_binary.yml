@@ -14,6 +14,10 @@ jobs:
           targets: x86_64-pc-windows-msvc
       - uses: swatinem/rust-cache@v2
       - run: cargo build --release --target x86_64-pc-windows-msvc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-binary
+          path: target/x86_64-pc-windows-msvc/release/*.exe
 
   build-linux:
     runs-on: ubuntu-latest
@@ -24,3 +28,6 @@ jobs:
           targets: x86_64-unknown-linux-gnu
       - uses: swatinem/rust-cache@v2
       - run: cargo build --release --target x86_64-unknown-linux-gnu
+        with:
+          name: linux-binary
+          path: target/x86_64-unknown-linux-gnu/release/ovc
