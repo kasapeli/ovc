@@ -48,6 +48,7 @@ pub fn create_commit(message: String) -> io::Result<()> {
     fs::set_permissions(&commit_object_path, perms)?;
 
     fs::write(head_path, &commit_hash)?;
+    fs::write(index_path, "")?;
 
     println!("ovc: commit created successfully");
     println!("ovc: [{}] {}", &commit_hash[..8], message);
